@@ -10,15 +10,8 @@ with sync_playwright() as p:
 
     ort.fill("Frankfurt am Main")
 
-    page.wait_for_timeout(2000)
+    page.wait_for_timeout(3000)
 
-    print("Buttons:")
-    print(page.locator("button").count())
-
-    for i in range(min(page.locator("button").count(), 20)):
-        try:
-            print(i, page.locator("button").nth(i).inner_text())
-        except:
-            pass
+    print(page.locator("body").inner_text().count("Frankfurt am Main"))
 
     browser.close()
