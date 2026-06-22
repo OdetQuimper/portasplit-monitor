@@ -10,8 +10,13 @@ with sync_playwright() as p:
 
     ort.fill("Frankfurt am Main")
 
+    page.wait_for_timeout(1000)
+
+    page.keyboard.press("ArrowDown")
+    page.keyboard.press("Enter")
+
     page.wait_for_timeout(3000)
 
-    print(page.locator("body").inner_text().count("Frankfurt am Main"))
+    print(page.locator("body").inner_text()[:2000])
 
     browser.close()
