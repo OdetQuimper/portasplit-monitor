@@ -1,9 +1,11 @@
 import requests
 
-r = requests.post(
+data = requests.post(
     "https://braucheklima.de/api/availability",
     json=[]
-)
+).json()
 
-print("Status:", r.status_code)
-print(r.text[:500])
+print("Anzahl Filialen:", len(data))
+
+for store in data[:5]:
+    print(store["name"])
