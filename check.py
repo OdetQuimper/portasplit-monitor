@@ -5,6 +5,7 @@ TOPIC = "porty"
 
 FRANKFURT_LAT = 50.1109
 FRANKFURT_LON = 8.6821
+RADIUS_KM = 100
 
 
 def distance_km(lat1, lon1, lat2, lon2):
@@ -29,6 +30,7 @@ data = requests.post(
 ).json()
 
 treffer = []
+ids = []
 
 for store in data:
 
@@ -43,7 +45,7 @@ for store in data:
             store["lon"]
         )
 
-        if entfernung > 100:
+        if entfernung > RADIUS_KM:
             continue
 
         portasplit = store["articles"].get("Midea Portasplit")
@@ -57,18 +59,43 @@ for store in data:
             continue
 
         price = portasplit["prices"][0]["price"]
+        url = portasplit["url"]
+
+        ids.append(store["name"])
 
         treffer.append(
-            f"{store['name']} | "
-            f"{round(entfernung)} km | "
-            f"{price} € | "
-            f"Bestand {stock}"
+            f"📍 {store['name']}\n"
+            f"📏 {round(entfernung)} km\n"
+            f"💰 {price} €\n"
+            f"📦 Bestand: {stock}\n"
+            f"🔗 {url}"
         )
 
     except Exception:
         pass
 
-print("Treffer:")
+current_state = "|".join(sorted(ids))
 
-for t in treffer:
-    print(t)
+try:
+    with open("last_alert.txt", "r", encoding="utf-8") as f:
+        old_state = f.read().strip()
+except:
+    old_state = ""
+
+if current_state and current_state != old_state:
+
+    message = "🚨 PortaSplit verfügbar!\n\n" + "\n\n".join(treffer)
+
+    requests.post(
+        f"https://ntfy.sh/{TOPIC}",
+        data=message.encode("utf-8"),
+        headers={"Title": "PortaSplit Alarm"}
+    )
+
+    with open("last_alert.txt", "w", encoding="utf-8") as f:
+        f.write(current_state)
+
+    print("Neue Treffer gemeldet")
+
+else:
+    print("Keine Änderung")
