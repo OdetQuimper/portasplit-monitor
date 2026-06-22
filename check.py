@@ -20,4 +20,4 @@ with sync_playwright() as p:
 
     browser.close()
 
-print("Fertig")
+print("OMID TEST 12345")
