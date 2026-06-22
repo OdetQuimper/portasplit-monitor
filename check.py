@@ -6,17 +6,15 @@ with sync_playwright() as p:
 
     page.goto("https://braucheklima.de/", wait_until="networkidle")
 
-    ort = page.locator("input").nth(1)
+    print("Links:")
+    links = page.locator("button, a")
 
-    ort.fill("Frankfurt am Main")
-
-    page.wait_for_timeout(1000)
-
-    page.keyboard.press("ArrowDown")
-    page.keyboard.press("Enter")
-
-    page.wait_for_timeout(3000)
-
-    print(page.locator("body").inner_text()[:2000])
+    for i in range(min(200, links.count())):
+        try:
+            text = links.nth(i).inner_text().strip()
+            if text in ["10 km", "25 km", "50 km", "100 km", "200 km"]:
+                print(text)
+        except:
+            pass
 
     browser.close()
