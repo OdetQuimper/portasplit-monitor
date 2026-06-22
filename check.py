@@ -1,7 +1,4 @@
 from playwright.sync_api import sync_playwright
-import requests
-
-TOPIC = "porty"
 
 with sync_playwright() as p:
     browser = p.chromium.launch(headless=True)
@@ -9,15 +6,18 @@ with sync_playwright() as p:
 
     page.goto("https://braucheklima.de/", wait_until="networkidle")
 
-    text = page.locator("body").inner_text()
+    inputs = page.locator("input")
 
-    if "mit PortaSplit\n0" not in text:
-        requests.post(
-            f"https://ntfy.sh/{TOPIC}",
-            data="🚨 Es gibt aktuell PortaSplit-Filialen!".encode("utf-8"),
-            headers={"Title": "PortaSplit Alarm"}
-        )
+    print("Anzahl Inputs:", inputs.count())
+
+    for i in range(min(inputs.count(), 20)):
+        try:
+            print("-----")
+            print("Index:", i)
+            print("placeholder:", inputs.nth(i).get_attribute("placeholder"))
+            print("type:", inputs.nth(i).get_attribute("type"))
+            print("name:", inputs.nth(i).get_attribute("name"))
+        except:
+            pass
 
     browser.close()
-
-print("Fertig")
