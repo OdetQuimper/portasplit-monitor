@@ -43,7 +43,7 @@ for store in data:
             store["lon"]
         )
 
-        if entfernung > 50:
+        if entfernung > 100:
             continue
 
         portasplit = store["articles"].get("Midea Portasplit")
