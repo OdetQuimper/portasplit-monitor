@@ -6,18 +6,12 @@ with sync_playwright() as p:
 
     page.goto("https://braucheklima.de/", wait_until="networkidle")
 
-    inputs = page.locator("input")
+    ort = page.locator("input").nth(1)
 
-    print("Anzahl Inputs:", inputs.count())
+    ort.fill("Frankfurt am Main")
 
-    for i in range(min(inputs.count(), 20)):
-        try:
-            print("-----")
-            print("Index:", i)
-            print("placeholder:", inputs.nth(i).get_attribute("placeholder"))
-            print("type:", inputs.nth(i).get_attribute("type"))
-            print("name:", inputs.nth(i).get_attribute("name"))
-        except:
-            pass
+    page.wait_for_timeout(3000)
+
+    print(page.locator("body").inner_text()[:3000])
 
     browser.close()
