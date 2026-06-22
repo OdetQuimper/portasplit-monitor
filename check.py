@@ -5,7 +5,20 @@ data = requests.post(
     json=[]
 ).json()
 
-print("Anzahl Filialen:", len(data))
+for store in data:
+    if store["name"] == "Hornbach Berlin-Marzahn":
+        portasplit = store["articles"].get("Midea Portasplit")
 
-for store in data[:5]:
-    print(store["name"])
+        print("Filiale:", store["name"])
+        print("Stadt:", store["city"])
+
+        print("Bestand:",
+              portasplit["stocks"][0]["stock"])
+
+        print("Preis:",
+              portasplit["prices"][0]["price"])
+
+        print("Link:",
+              portasplit["url"])
+
+        break
