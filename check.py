@@ -1,24 +1,48 @@
 import requests
 
+TOPIC = "porty"
+
 data = requests.post(
     "https://braucheklima.de/api/availability",
     json=[]
 ).json()
 
+treffer = []
+
 for store in data:
-    if store["name"] == "Hornbach Berlin-Marzahn":
+    try:
         portasplit = store["articles"].get("Midea Portasplit")
 
-        print("Filiale:", store["name"])
-        print("Stadt:", store["city"])
+        if not portasplit:
+            continue
 
-        print("Bestand:",
-              portasplit["stocks"][0]["stock"])
+        stock = portasplit["stocks"][0]["stock"]
 
-        print("Preis:",
-              portasplit["prices"][0]["price"])
+        if stock > 0:
+            name = store["name"]
+            city = store["city"]
+            price = portasplit["prices"][0]["price"]
+            url = portasplit["url"]
 
-        print("Link:",
-              portasplit["url"])
+            treffer.append(
+                f"📍 {name} ({city})\n"
+                f"💰 {price} €\n"
+                f"📦 Bestand: {stock}\n"
+                f"🔗 {url}"
+            )
 
-        break
+    except Exception:
+        pass
+
+if treffer:
+    message = "🚨 PortaSplit verfügbar!\n\n" + "\n\n".join(treffer[:10])
+
+    requests.post(
+        f"https://ntfy.sh/{TOPIC}",
+        data=message.encode("utf-8"),
+        headers={"Title": "PortaSplit Alarm"}
+    )
+
+    print("Nachricht gesendet")
+else:
+    print("Keine Verfügbarkeit gefunden")
