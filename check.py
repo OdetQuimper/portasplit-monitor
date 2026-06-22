@@ -6,7 +6,6 @@ with sync_playwright() as p:
 
     page.goto("https://braucheklima.de/", wait_until="networkidle")
 
-    print("Checkboxen:")
-    print(page.locator('input[type="checkbox"]').count())
+    print(page.locator("body").inner_text()[:5000])
 
     browser.close()
