@@ -1,11 +1,9 @@
-from playwright.sync_api import sync_playwright
+import requests
 
-with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True)
-    page = browser.new_page()
+r = requests.post(
+    "https://braucheklima.de/api/availability",
+    json=[]
+)
 
-    page.goto("https://braucheklima.de/", wait_until="networkidle")
-
-    print(page.content()[:10000])
-
-    browser.close()
+print("Status:", r.status_code)
+print(r.text[:500])
