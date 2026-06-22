@@ -1,6 +1,27 @@
 import requests
+import math
 
 TOPIC = "porty"
+
+FRANKFURT_LAT = 50.1109
+FRANKFURT_LON = 8.6821
+
+
+def distance_km(lat1, lon1, lat2, lon2):
+    r = 6371
+
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+
+    a = (
+        math.sin(dlat / 2) ** 2
+        + math.cos(math.radians(lat1))
+        * math.cos(math.radians(lat2))
+        * math.sin(dlon / 2) ** 2
+    )
+
+    return r * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
 
 data = requests.post(
     "https://braucheklima.de/api/availability",
@@ -10,7 +31,21 @@ data = requests.post(
 treffer = []
 
 for store in data:
+
     try:
+        if not store["lat"] or not store["lon"]:
+            continue
+
+        entfernung = distance_km(
+            FRANKFURT_LAT,
+            FRANKFURT_LON,
+            store["lat"],
+            store["lon"]
+        )
+
+        if entfernung > 50:
+            continue
+
         portasplit = store["articles"].get("Midea Portasplit")
 
         if not portasplit:
@@ -18,31 +53,22 @@ for store in data:
 
         stock = portasplit["stocks"][0]["stock"]
 
-        if stock > 0:
-            name = store["name"]
-            city = store["city"]
-            price = portasplit["prices"][0]["price"]
-            url = portasplit["url"]
+        if stock <= 0:
+            continue
 
-            treffer.append(
-                f"📍 {name} ({city})\n"
-                f"💰 {price} €\n"
-                f"📦 Bestand: {stock}\n"
-                f"🔗 {url}"
-            )
+        price = portasplit["prices"][0]["price"]
+
+        treffer.append(
+            f"{store['name']} | "
+            f"{round(entfernung)} km | "
+            f"{price} € | "
+            f"Bestand {stock}"
+        )
 
     except Exception:
         pass
 
-if treffer:
-    message = "🚨 PortaSplit verfügbar!\n\n" + "\n\n".join(treffer[:10])
+print("Treffer:")
 
-    requests.post(
-        f"https://ntfy.sh/{TOPIC}",
-        data=message.encode("utf-8"),
-        headers={"Title": "PortaSplit Alarm"}
-    )
-
-    print("Nachricht gesendet")
-else:
-    print("Keine Verfügbarkeit gefunden")
+for t in treffer:
+    print(t)
