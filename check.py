@@ -5,7 +5,7 @@ TOPIC = "porty"
 
 FRANKFURT_LAT = 50.1109
 FRANKFURT_LON = 8.6821
-RADIUS_KM = 200
+RADIUS_KM = 50
 
 
 def distance_km(lat1, lon1, lat2, lon2):
