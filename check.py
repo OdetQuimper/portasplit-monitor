@@ -71,16 +71,23 @@ for store in data:
             f"🔗 {url}"
         )
 
-    except Exception:
-        pass
+    except Exception as e:
+        print("Fehler:", e)
 
 current_state = "|".join(sorted(ids))
+
+print("current_state:")
+print(current_state)
+print("Anzahl IDs:", len(ids))
 
 try:
     with open("last_alert.txt", "r", encoding="utf-8") as f:
         old_state = f.read().strip()
 except:
     old_state = ""
+
+print("old_state:")
+print(old_state)
 
 if current_state and current_state != old_state:
 
@@ -94,6 +101,10 @@ if current_state and current_state != old_state:
 
     with open("last_alert.txt", "w", encoding="utf-8") as f:
         f.write(current_state)
+
+    with open("last_alert.txt", "r", encoding="utf-8") as f:
+        print("Dateiinhalt nach Schreiben:")
+        print(f.read())
 
     print("Neue Treffer gemeldet")
 
