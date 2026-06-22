@@ -6,9 +6,7 @@ with sync_playwright() as p:
 
     page.goto("https://braucheklima.de/", wait_until="networkidle")
 
-    print("Seite geladen")
-
-    print(page.locator("text=Nur Verfügbare").count())
-    print(page.locator("text=Portasplit Cool").count())
+    print("Checkboxen:")
+    print(page.locator('input[type="checkbox"]').count())
 
     browser.close()
