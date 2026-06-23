@@ -1,3 +1,6 @@
+import requests
+import math
+
 response = requests.post(
     "https://braucheklima.de/api/availability",
     json=[],
