@@ -2,8 +2,8 @@ name: PortaSplit Monitor
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '7,22,37,52 * * * *'
+  repository_dispatch:
+    types: [portasplit_check]
 
 jobs:
   check:
